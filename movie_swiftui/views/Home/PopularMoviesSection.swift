@@ -1,10 +1,7 @@
 import SwiftUI
+
 struct PopularMoviesSection: View {
-    let movies = [
-        "home_image_trailer",  // Index 0 - Inside Out 2
-        "movie3",            // Index 1 - Garfield
-        "movie3"               // Index 2 - Movie 3
-    ]
+    let movies: [Movie]  // Accept movies from parent
     
     @State private var seeAllPressed = false
     var onMovieTap: ((Int) -> Void)? = nil
@@ -46,7 +43,7 @@ struct PopularMoviesSection: View {
                 HStack(spacing: 16) {
                     ForEach(movies.indices, id: \.self) { index in
                         MovieCardView(
-                            image: movies[index],
+                            movie: movies[index],
                             onTap: {
                                 onMovieTap?(index)
                             }

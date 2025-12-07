@@ -14,6 +14,7 @@ enum SeatStatus {
 }
 
 struct SeatSelectionView: View {
+    let movieId: String
     let movieTitle: String
     let movieImage: String
     let duration: String
@@ -22,6 +23,7 @@ struct SeatSelectionView: View {
     let selectedTime: String
     let location: String
     
+    @StateObject private var viewModel = BookingViewModel()
     @State private var seats: [[Seat]] = []
     @State private var selectedSeats: [Seat] = []
     @State private var showSuccess = false
@@ -57,137 +59,157 @@ struct SeatSelectionView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 16)
                 
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 24) {
-                        // Movie Info
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(movieTitle)
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                HStack(spacing: 8) {
-                                    Image(systemName: "clock")
-                                        .font(.system(size: 12))
-                                    Text(duration)
-                                    Text("|")
-                                    Text(rating)
-                                }
-                                .font(.system(size: 14))
-                                .foregroundColor(.white.opacity(0.7))
-                            }
-                            
-                            Spacer()
-                            
-                            Text("\(availableSeatsCount) Seats Available")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
-                        }
-                        .padding(.horizontal, 20)
-                        
-                        // Cinema Screen
-                        VStack(spacing: 30) {
-                            // Seats Grid
-                            VStack(spacing: 8) {
-                                ForEach(seats.indices, id: \.self) { rowIndex in
-                                    HStack(spacing: 6) {
-                                        ForEach(seats[rowIndex].indices, id: \.self) { seatIndex in
-                                            SeatView(
-                                                seat: seats[rowIndex][seatIndex],
-                                                onTap: {
-                                                    toggleSeat(row: rowIndex, seat: seatIndex)
-                                                }
-                                            )
-                                        }
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                    Spacer()
+                } else {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: 24) {
+                            // Movie Info
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(movieTitle)
+                                        .font(.system(size: 24, weight: .bold))
+                                        .foregroundColor(.white)
+                                    
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "clock")
+                                            .font(.system(size: 12))
+                                        Text(duration)
+                                        Text("|")
+                                        Text(rating)
                                     }
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.7))
                                 }
+                                
+                                Spacer()
+                                
+                                Text("\(availableSeatsCount) Seats Available")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
                             }
                             .padding(.horizontal, 20)
                             
-                            // Screen
-                            VStack(spacing: 12) {
-                                RoundedRectangle(cornerRadius: 100)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [Color.blue.opacity(0.3), Color.blue.opacity(0.1)],
-                                            startPoint: .top,
-                                            endPoint: .bottom
+                            // Cinema Screen
+                            VStack(spacing: 30) {
+                                // Seats Grid
+                                VStack(spacing: 8) {
+                                    ForEach(seats.indices, id: \.self) { rowIndex in
+                                        HStack(spacing: 6) {
+                                            ForEach(seats[rowIndex].indices, id: \.self) { seatIndex in
+                                                SeatView(
+                                                    seat: seats[rowIndex][seatIndex],
+                                                    onTap: {
+                                                        toggleSeat(row: rowIndex, seat: seatIndex)
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                // Screen
+                                VStack(spacing: 12) {
+                                    RoundedRectangle(cornerRadius: 100)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.blue.opacity(0.3), Color.blue.opacity(0.1)],
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
                                         )
-                                    )
-                                    .frame(height: 4)
-                                    .padding(.horizontal, 40)
+                                        .frame(height: 4)
+                                        .padding(.horizontal, 40)
+                                }
                             }
-                        }
-                        
-                        // Legend
-                        HStack(spacing: 24) {
-                            LegendItem(color: Color.gray.opacity(0.3), label: "Not Available")
-                            LegendItem(color: Color.blue, label: "Available")
-                            LegendItem(color: Color.green, label: "Selected")
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
-                        
-                        // Summary
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Summary")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
                             
-                            VStack(spacing: 12) {
-                                SummaryRow(label: "Date", value: selectedDate)
-                                SummaryRow(label: "Seats Selected", value: selectedSeats.map { "\($0.row)\($0.number)" }.joined(separator: ", "))
-                                SummaryRow(label: "Location", value: location)
+                            // Legend
+                            HStack(spacing: 24) {
+                                LegendItem(color: Color.gray.opacity(0.3), label: "Not Available")
+                                LegendItem(color: Color.blue, label: "Available")
+                                LegendItem(color: Color.green, label: "Selected")
                             }
-                        }
-                        .padding(20)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.white.opacity(0.05))
-                        )
-                        .padding(.horizontal, 20)
-                        
-                        // Continue Button
-                        HStack(spacing: 16) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("$\(String(format: "%.2f", totalPrice))")
-                                    .font(.system(size: 28, weight: .bold))
+                            .padding(.horizontal, 20)
+                            .padding(.top, 20)
+                            
+                            // Summary
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Summary")
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.white)
-                                Text("\(selectedSeats.count) Seats")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
+                                
+                                VStack(spacing: 12) {
+                                    SummaryRow(label: "Date", value: selectedDate)
+                                    SummaryRow(label: "Seats Selected", value: selectedSeats.map { "\($0.row)\($0.number)" }.joined(separator: ", "))
+                                    SummaryRow(label: "Location", value: location)
+                                }
                             }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.white.opacity(0.05))
+                            )
+                            .padding(.horizontal, 20)
                             
-                            Spacer()
-                            
-                            Button {
-                                showSuccess = true
-                            } label: {
-                                Text("Continue")
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .lineLimit(1)
-                                    .fixedSize(horizontal: true, vertical: false)
-                                    .padding(.horizontal, 40)
-                                    .padding(.vertical, 16)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 30)
-                                            .fill(Color.blue)
-                                            .shadow(color: .blue.opacity(0.4), radius: 20, x: 0, y: 10)
+                            // Continue Button
+                            HStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("$\(String(format: "%.2f", totalPrice))")
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Text("\(selectedSeats.count) Seats")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                                
+                                Spacer()
+                                
+                                Button {
+                                    viewModel.createBooking(
+                                        movieId: movieId,
+                                        date: selectedDate, // Note: Should be ISO date, but using string for now as per current UI
+                                        seats: selectedSeats.map { "\($0.row)\($0.number)" },
+                                        totalPrice: totalPrice,
+                                        location: location
                                     )
+                                } label: {
+                                    Text("Book Ticket")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                                        .fixedSize(horizontal: true, vertical: false)
+                                        .padding(.horizontal, 40)
+                                        .padding(.vertical, 16)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 30)
+                                                .fill(Color.blue)
+                                                .shadow(color: .blue.opacity(0.4), radius: 20, x: 0, y: 10)
+                                        )
+                                }
+                                .disabled(selectedSeats.isEmpty)
+                                .opacity(selectedSeats.isEmpty ? 0.5 : 1.0)
                             }
-                            .disabled(selectedSeats.isEmpty)
-                            .opacity(selectedSeats.isEmpty ? 0.5 : 1.0)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                            .padding(.bottom, 40)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                        .padding(.bottom, 40)
                     }
                 }
             }
+            .alert(isPresented: Binding<Bool>(
+                get: { viewModel.errorMessage != nil },
+                set: { _ in viewModel.errorMessage = nil }
+            )) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
+            }
         }
         .navigationBarHidden(true)
-        .fullScreenCover(isPresented: $showSuccess) {
+        .fullScreenCover(isPresented: $viewModel.bookingSuccess) {
             BookingSuccessView(
                 movieTitle: movieTitle,
                 movieImage: movieImage,
@@ -200,6 +222,10 @@ struct SeatSelectionView: View {
         }
         .onAppear {
             setupSeats()
+            viewModel.fetchBookedSeats(movieId: movieId, date: selectedDate)
+        }
+        .onReceive(viewModel.$bookedSeats) { bookedSeats in
+            updateBookedSeats(bookedSeats: bookedSeats)
         }
     }
     
@@ -218,22 +244,8 @@ struct SeatSelectionView: View {
             for i in 1...12 {
                 var status: SeatStatus = .available
                 
-                // Set some seats as not available (matching reference)
-                if rowIndex < 2 || (rowIndex == 2 && i < 3) {
-                    status = .notAvailable
-                }
-                
-                // Set some seats as selected (G9, G10 from reference)
-                if row == "G" && (i == 9 || i == 10) {
-                    status = .selected
-                    selectedSeats.append(Seat(row: row, number: i, status: status))
-                }
-                
-                // Some random occupied seats
-                if (row == "F" && i == 4) || (row == "E" && (i == 4 || i == 5 || i == 6)) ||
-                   (row == "D" && (i == 4 || i == 5)) || (row == "B" && (i >= 1 && i <= 7)) {
-                    status = .notAvailable
-                }
+                // Set some seats as not available (structural layout if needed)
+                // For now, making all seats potentially available until fetched
                 
                 rowSeats.append(Seat(row: row, number: i, status: status))
             }
@@ -242,6 +254,28 @@ struct SeatSelectionView: View {
         }
         
         seats = allSeats
+    }
+    
+    func updateBookedSeats(bookedSeats: [String]) {
+        for rowIndex in seats.indices {
+            for seatIndex in seats[rowIndex].indices {
+                let seat = seats[rowIndex][seatIndex]
+                let seatId = "\(seat.row)\(seat.number)"
+                
+                if bookedSeats.contains(seatId) {
+                    seats[rowIndex][seatIndex].status = .notAvailable
+                    // If it was selected, deselect it
+                    if let selectedIndex = selectedSeats.firstIndex(where: { $0.id == seat.id }) {
+                        selectedSeats.remove(at: selectedIndex)
+                    }
+                } else {
+                    // Reset to available if it's not booked and not selected
+                    if seats[rowIndex][seatIndex].status == .notAvailable {
+                        seats[rowIndex][seatIndex].status = .available
+                    }
+                }
+            }
+        }
     }
     
     func toggleSeat(row: Int, seat: Int) {
@@ -333,6 +367,7 @@ struct SummaryRow: View {
 
 #Preview {
     SeatSelectionView(
+        movieId: "123",
         movieTitle: "Inside Out 2",
         movieImage: "home_image_trailer",
         duration: "1 HR 36 MIN",

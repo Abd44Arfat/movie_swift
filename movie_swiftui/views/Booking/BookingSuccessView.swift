@@ -106,12 +106,31 @@ struct BookingSuccessView: View {
                             
                             // Movie Poster Card
                             VStack(spacing: 20) {
-                                Image(movieImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 200, height: 280)
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
+                                AsyncImage(url: URL(string: movieImage)) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(width: 200, height: 280)
+                                            .background(Color.gray.opacity(0.3))
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 200, height: 280)
+                                            .clipped()
+                                    case .failure:
+                                        Image(systemName: "photo")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 200, height: 280)
+                                            .background(Color.gray.opacity(0.3))
+                                            .foregroundColor(.gray)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
                                 
                                 Text(movieTitle)
                                     .font(.system(size: 24, weight: .bold))

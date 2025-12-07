@@ -1,45 +1,40 @@
 import SwiftUI
 
-struct MovieData: Identifiable {
-    let id = UUID()
-    let title: String
-    let imageName: String
-    let duration: String
-    let rating: String
-}
-
 struct MovieBookingView: View {
-    let movieTitle: String
-    let movieImage: String
-    let duration: String
-    let rating: String
+    let movies: [Movie]
     var initialMovieIndex: Int = 0
     
     @State private var selectedMovieIndex: Int = 0
-    @State private var selectedDate: Int = 1
+    @State private var selectedDate: Int = 0
     @State private var selectedTime: String = "8:30 PM"
     @State private var showSeatSelection = false
     @Environment(\.dismiss) var dismiss
     
-    let movies = [
-        MovieData(title: "Inside Out 2", imageName: "home_image_trailer", duration: "1HR 36 MIN", rating: "PG"),
-        MovieData(title: "Garfield", imageName: "garfield", duration: "1HR 40 MIN", rating: "PG"),
-        MovieData(title: "Movie 3", imageName: "movie3", duration: "2HR 15 MIN", rating: "PG-13")
-    ]
-    
-    let dates = [
-        (day: "Mo", date: 10),
-        (day: "Tu", date: 11),
-        (day: "We", date: 12),
-        (day: "Th", date: 13),
-        (day: "Fr", date: 14),
-        (day: "Sa", date: 15)
-    ]
+    // Generate dates dynamically starting from today
+    var dates: [(day: String, date: Int, fullDate: Date)] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        var datesList: [(day: String, date: Int, fullDate: Date)] = []
+        
+        for i in 0..<7 {
+            if let date = calendar.date(byAdding: .day, value: i, to: today) {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "EE"
+                let day = formatter.string(from: date)
+                let dayNumber = calendar.component(.day, from: date)
+                datesList.append((day: day, date: dayNumber, fullDate: date))
+            }
+        }
+        return datesList
+    }
     
     let times = ["4:00 PM", "5:30 PM", "7:00 PM", "8:30 PM", "9:00 PM"]
     
-    var currentMovie: MovieData {
-        movies[selectedMovieIndex]
+    var currentMovie: Movie {
+        if movies.indices.contains(selectedMovieIndex) {
+            return movies[selectedMovieIndex]
+        }
+        return movies[0]
     }
     
     var body: some View {
@@ -82,9 +77,9 @@ struct MovieBookingView: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "clock")
                                     .font(.system(size: 14))
-                                Text(currentMovie.duration)
+                                Text(currentMovie.duration ?? "N/A")
                                 Text("|")
-                                Text(currentMovie.rating)
+                                Text(String(format: "%.1f", currentMovie.rating ?? 0.0))
                             }
                             .font(.system(size: 14))
                             .foregroundColor(.white.opacity(0.7))
@@ -109,6 +104,7 @@ struct MovieBookingView: View {
                                     }
                                 }
                                 .padding(.horizontal, 60)
+                                .padding(.vertical, 50)
                             }
                             .onChange(of: selectedMovieIndex) { oldValue, newValue in
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
@@ -119,7 +115,7 @@ struct MovieBookingView: View {
                                 proxy.scrollTo(selectedMovieIndex, anchor: .center)
                             }
                         }
-                        .frame(height: 400)
+                        .frame(height: 500)
                         
                         // Date Selection
                         VStack(alignment: .leading, spacing: 16) {
@@ -194,44 +190,70 @@ struct MovieBookingView: View {
             selectedMovieIndex = initialMovieIndex
         }
         .fullScreenCover(isPresented: $showSeatSelection) {
-            SeatSelectionView(
-                movieTitle: currentMovie.title,
-                movieImage: currentMovie.imageName,
-                duration: currentMovie.duration,
-                rating: currentMovie.rating,
-                selectedDate: "Friday, 23th June 2024",
-                selectedTime: selectedTime,
-                location: "Miami, Aventura 24"
-            )
+            if dates.indices.contains(selectedDate) {
+                let date = dates[selectedDate].fullDate
+                // Combine date and time (simplified for now, just using date)
+                let isoDate = ISO8601DateFormatter().string(from: date)
+                
+                SeatSelectionView(
+                    movieId: currentMovie.id,
+                    movieTitle: currentMovie.title,
+                    movieImage: currentMovie.posterUrl,
+                    duration: currentMovie.duration ?? "N/A",
+                    rating: String(format: "%.1f", currentMovie.rating ?? 0.0),
+                    selectedDate: isoDate,
+                    selectedTime: selectedTime,
+                    location: "Miami, Aventura 24"
+                )
+            }
         }
     }
 }
 
 struct MoviePosterCard: View {
-    let movie: MovieData
+    let movie: Movie
     let isSelected: Bool
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
-            Image(movie.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
-                .clipShape(RoundedRectangle(cornerRadius: 24))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24)
-                        .stroke(isSelected ? Color.green : Color.clear, lineWidth: 3)
-                )
-                .shadow(
-                    color: isSelected ? Color.green.opacity(0.4) : Color.black.opacity(0.5),
-                    radius: isSelected ? 25 : 30,
-                    x: 0,
-                    y: 15
-                )
-                .scaleEffect(isSelected ? 1.0 : 0.9)
-                .opacity(isSelected ? 1.0 : 0.6)
-                .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isSelected)
+            AsyncImage(url: URL(string: movie.posterUrl)) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .background(Color.gray.opacity(0.3))
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .clipped()
+                case .failure:
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .background(Color.gray.opacity(0.3))
+                        .foregroundColor(.gray)
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(isSelected ? Color.green : Color.clear, lineWidth: 3)
+            )
+            .shadow(
+                color: isSelected ? Color.green.opacity(0.6) : Color.black.opacity(0.5),
+                radius: isSelected ? 30 : 10,
+                x: 0,
+                y: isSelected ? 0 : 10
+            )
+            .scaleEffect(isSelected ? 1.0 : 0.9)
+            .opacity(isSelected ? 1.0 : 0.6)
+            .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isSelected)
         }
     }
 }
@@ -286,9 +308,8 @@ struct TimeButton: View {
 
 #Preview {
     MovieBookingView(
-        movieTitle: "Inside Out 2",
-        movieImage: "home_image_trailer",
-        duration: "1HR 36 MIN",
-        rating: "PG"
+        movies: [
+            Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14")
+        ]
     )
 }
