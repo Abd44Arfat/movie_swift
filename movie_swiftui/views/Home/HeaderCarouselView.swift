@@ -50,7 +50,7 @@ struct HorizontalCarouselView: View {
                     ProgressView()
                         .tint(.white)
                 }
-                .frame(height: 600)
+                .frame(height: 450)
             } else {
                 TabView(selection: $vm.currentIndex) {
                     ForEach(vm.movies.indices, id: \.self) { index in
@@ -64,34 +64,34 @@ struct HorizontalCarouselView: View {
                                     Color.gray.opacity(0.3)
                                         .overlay(ProgressView().tint(.white))
                                 case .success(let image):
-                                    // Successfully loaded image
+                                    // Successfully loaded image - zoomed in to fill more space
                                     image
                                         .resizable()
-                                        .scaledToFill()
-                                        .frame(width: geo.size.width, height: 600)
+                                       
+                                        .frame(width: 500, height: 500)
                                         .clipped()
-                                        .scaleEffect(vm.currentIndex == index ? 1.0 : 0.95)
+                                        .scaleEffect(vm.currentIndex == index ? 1 : 0.4)
                                         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: vm.currentIndex)
                                 case .failure:
                                     // Failed to load - show placeholder
-                                    Color.gray.opacity(0.3)
+                                    Color.gray.opacity(0.1)
                                         .overlay(
                                             Image(systemName: "photo")
                                                 .font(.largeTitle)
-                                                .foregroundColor(.white.opacity(0.5))
+                                                .foregroundColor(.white.opacity(0.9))
                                         )
                                 @unknown default:
                                     EmptyView()
                                 }
                             }
-                            .frame(width: geo.size.width, height: 600)
+                            .frame(width: 450, height: 450)
                             
                             // Enhanced gradient overlay
                             LinearGradient(
                                 gradient: Gradient(colors: [
                                     .clear,
                                     .black.opacity(0.3),
-                                    .black.opacity(0.7),
+                                    .black.opacity(0.4),
                                     .black.opacity(0.95)
                                 ]),
                                 startPoint: .top,
@@ -106,6 +106,8 @@ struct HorizontalCarouselView: View {
                                     .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(.white)
                                     .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 8)
                                     .transition(.opacity.combined(with: .scale))
                                     .animation(.spring(response: 0.5, dampingFraction: 0.7), value: vm.currentIndex)
                                 
@@ -140,6 +142,7 @@ struct HorizontalCarouselView: View {
                                     )
                                 }
                                 .scaleEffect(buttonScale)
+                                .padding(.horizontal, 20)
                                 .padding(.bottom, 20)
                             }
                             .padding(.horizontal, 24)
@@ -152,7 +155,7 @@ struct HorizontalCarouselView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
         }
-        .frame(height: 600)
+        .frame(height: 450)
         .overlay(
             // Custom page indicators
             HStack(spacing: 8) {

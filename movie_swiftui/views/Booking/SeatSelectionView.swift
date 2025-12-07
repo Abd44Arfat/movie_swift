@@ -6,13 +6,11 @@ struct Seat: Identifiable {
     let number: Int
     var status: SeatStatus
 }
-
 enum SeatStatus {
     case available
     case notAvailable
     case selected
 }
-
 struct SeatSelectionView: View {
     let movieId: String
     let movieTitle: String
@@ -172,7 +170,8 @@ struct SeatSelectionView: View {
                                 Button {
                                     viewModel.createBooking(
                                         movieId: movieId,
-                                        date: selectedDate, // Note: Should be ISO date, but using string for now as per current UI
+                                        date: selectedDate,
+                                        time: selectedTime,
                                         seats: selectedSeats.map { "\($0.row)\($0.number)" },
                                         totalPrice: totalPrice,
                                         location: location
@@ -222,7 +221,7 @@ struct SeatSelectionView: View {
         }
         .onAppear {
             setupSeats()
-            viewModel.fetchBookedSeats(movieId: movieId, date: selectedDate)
+            viewModel.fetchBookedSeats(movieId: movieId, date: selectedDate, time: selectedTime)
         }
         .onReceive(viewModel.$bookedSeats) { bookedSeats in
             updateBookedSeats(bookedSeats: bookedSeats)

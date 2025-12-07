@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SearchView: View {
+struct MovieSearchView: View {
     let movies: [Movie]
     @State private var searchText = ""
     @Environment(\.dismiss) var dismiss
@@ -86,7 +86,7 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView(movies: [
-        Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14")
+    MovieSearchView(movies: [
+        Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14",price: 100.00, showtimes: ["15:00"],)
     ])
 }

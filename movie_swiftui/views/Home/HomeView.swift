@@ -10,6 +10,8 @@ struct HomeView: View {
     
     @State private var scrollOffset: CGFloat = 0
     @State private var showSearch = false
+    @State private var showBooking = false
+    @State private var selectedMovieIndex = 0
     
     var body: some View {
         ZStack {
@@ -98,6 +100,9 @@ struct HomeView: View {
                 }
                 .coordinateSpace(name: "scroll")
             }
+        }
+        .fullScreenCover(isPresented: $showSearch) {
+            MovieSearchView(movies: viewModel.movies)
         }
         .fullScreenCover(isPresented: $showBooking) {
             if selectedMovieIndex < viewModel.movies.count {

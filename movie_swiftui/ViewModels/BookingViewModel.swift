@@ -15,14 +15,15 @@ class BookingViewModel: ObservableObject {
         self.networkService = networkService
     }
     
-    func fetchBookedSeats(movieId: String, date: String) {
+    func fetchBookedSeats(movieId: String, date: String, time: String) {
         isLoading = true
         errorMessage = nil
         
         var components = URLComponents(string: "http://localhost:3000/bookings/booked-seats")
         components?.queryItems = [
             URLQueryItem(name: "movieId", value: movieId),
-            URLQueryItem(name: "date", value: date)
+            URLQueryItem(name: "date", value: date),
+            URLQueryItem(name: "time", value: time)
         ]
         
         guard let url = components?.url else {
@@ -46,7 +47,7 @@ class BookingViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func createBooking(movieId: String, date: String, seats: [String], totalPrice: Double, location: String) {
+    func createBooking(movieId: String, date: String, time: String, seats: [String], totalPrice: Double, location: String) {
         isLoading = true
         errorMessage = nil
         bookingSuccess = false
@@ -54,6 +55,7 @@ class BookingViewModel: ObservableObject {
         let request = CreateBookingRequest(
             movieId: movieId,
             date: date,
+            time: time,
             seats: seats,
             totalPrice: totalPrice,
             location: location

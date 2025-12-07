@@ -15,9 +15,8 @@ struct MainTabView: View {
                         HomeView()
                     case 1:
                         SearchView()
+                  
                     case 2:
-                        CategoriesView()
-                    case 3:
                         ProfileView()
                     default:
                         HomeView()
@@ -52,19 +51,13 @@ struct EnhancedTabBar: View {
                 selectedTab: $selectedTab
             )
             
-            TabBarButton(
-                icon: "square.grid.2x2.fill",
-                label: "Categories",
-                isSelected: selectedTab == 2,
-                index: 2,
-                selectedTab: $selectedTab
-            )
+       
             
             TabBarButton(
                 icon: "person.fill",
                 label: "Profile",
-                isSelected: selectedTab == 3,
-                index: 3,
+                isSelected: selectedTab == 2,
+                index: 2,
                 selectedTab: $selectedTab
             )
         }

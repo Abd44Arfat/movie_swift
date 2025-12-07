@@ -11,6 +11,8 @@ struct Movie: Identifiable, Codable {
     let duration: String?    // Duration (e.g., "2h 30m")
     let rating: Double?      // Rating (e.g., 8.5)
     let releaseDate: String? // Release date in ISO format
+    let price: Double?       // Ticket price
+    let showtimes: [String]? // Available showtimes (e.g., ["10:00", "14:00"])
     
     // CodingKeys maps the backend JSON keys to our Swift property names
     enum CodingKeys: String, CodingKey {
@@ -22,5 +24,7 @@ struct Movie: Identifiable, Codable {
         case duration
         case rating
         case releaseDate
+        case price
+        case showtimes
     }
 }

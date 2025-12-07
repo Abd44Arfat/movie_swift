@@ -103,7 +103,7 @@ struct MovieBookingView: View {
                                         .id(index)
                                     }
                                 }
-                                .padding(.horizontal, 60)
+                                .padding(.horizontal, 20)
                                 .padding(.vertical, 50)
                             }
                             .onChange(of: selectedMovieIndex) { oldValue, newValue in
@@ -221,19 +221,19 @@ struct MoviePosterCard: View {
                 switch phase {
                 case .empty:
                     ProgressView()
-                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .frame(width: isSelected ? 320 : 260, height: isSelected ? 420 : 360)
                         .background(Color.gray.opacity(0.3))
                 case .success(let image):
                     image
                         .resizable()
                         .scaledToFill()
-                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .frame(width: isSelected ? 320 : 260, height: isSelected ? 420 : 360)
                         .clipped()
                 case .failure:
                     Image(systemName: "photo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: isSelected ? 280 : 240, height: isSelected ? 380 : 340)
+                        .frame(width: isSelected ? 320 : 260, height: isSelected ? 420 : 360)
                         .background(Color.gray.opacity(0.3))
                         .foregroundColor(.gray)
                 @unknown default:
@@ -309,7 +309,9 @@ struct TimeButton: View {
 #Preview {
     MovieBookingView(
         movies: [
-            Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14")
+            Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14",price: 100
+                 ,showtimes: ["15:00"]
+                 )
         ]
     )
 }
