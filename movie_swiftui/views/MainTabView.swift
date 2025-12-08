@@ -119,4 +119,8 @@ struct TabBarButton: View {
 
 #Preview {
     MainTabView()
+        .environmentObject(AuthManager.shared)
+        .environmentObject(HomeViewModel())
+        .environmentObject(FavoritesManager.shared)
+        .environmentObject(BookingManager.shared)
 }

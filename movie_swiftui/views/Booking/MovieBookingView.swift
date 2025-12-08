@@ -31,18 +31,50 @@ struct MovieBookingView: View {
     
     let times = ["4:00 PM", "5:30 PM", "7:00 PM", "8:30 PM", "9:00 PM"]
     
-    var currentMovie: Movie {
-        if movies.indices.contains(selectedMovieIndex) {
-            return movies[selectedMovieIndex]
+    var currentMovie: Movie? {
+        guard !movies.isEmpty else {
+            print("⚠️ MovieBookingView: movies array is empty!")
+            return nil
         }
-        return movies[0]
+        guard movies.indices.contains(selectedMovieIndex) else {
+            print("⚠️ MovieBookingView: selectedMovieIndex \(selectedMovieIndex) out of bounds. Movies count: \(movies.count)")
+            return movies.first
+        }
+        return movies[selectedMovieIndex]
     }
     
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            VStack(spacing: 0) {
+            if let currentMovie = currentMovie {
+                contentView(for: currentMovie)
+            } else {
+                // Show error state
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.red)
+                    Text("Movie not found")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Button("Go Back") {
+                        dismiss()
+                    }
+                    .foregroundColor(.blue)
+                }
+            }
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            selectedMovieIndex = initialMovieIndex
+            print("📱 MovieBookingView appeared. Movies count: \(movies.count), Initial index: \(initialMovieIndex)")
+        }
+    }
+    
+    @ViewBuilder
+    private func contentView(for currentMovie: Movie) -> some View {
+        VStack(spacing: 0) {
                 // Header with safe area respect
                 HStack {
                     Button {
@@ -195,33 +227,28 @@ struct MovieBookingView: View {
                         .padding(.bottom, 40)
                     }
                 }
-            }
-        }
-        .navigationBarHidden(true)
-        .onAppear {
-            selectedMovieIndex = initialMovieIndex
-        }
-        .fullScreenCover(isPresented: $showSeatSelection) {
-            if dates.indices.contains(selectedDate) {
-                let date = dates[selectedDate].fullDate
-                // Combine date and time (simplified for now, just using date)
-                let isoDate = ISO8601DateFormatter().string(from: date)
-                
-                SeatSelectionView(
-                    movieId: currentMovie.id,
-                    movieTitle: currentMovie.title,
-                    movieImage: currentMovie.posterUrl,
-                    duration: currentMovie.duration ?? "N/A",
-                    rating: String(format: "%.1f", currentMovie.rating ?? 0.0),
-                    selectedDate: isoDate,
-                    selectedTime: selectedTime,
-                    location: "Giza, Egypt 24",
-                    pricePerSeat: currentMovie.price ?? 50.0
-                )
+                .fullScreenCover(isPresented: $showSeatSelection) {
+                    if dates.indices.contains(selectedDate) {
+                        let date = dates[selectedDate].fullDate
+                        let isoDate = ISO8601DateFormatter().string(from: date)
+                        
+                        SeatSelectionView(
+                            movieId: currentMovie.id,
+                            movieTitle: currentMovie.title,
+                            movieImage: currentMovie.posterUrl,
+                            duration: currentMovie.duration ?? "N/A",
+                            rating: String(format: "%.1f", currentMovie.rating ?? 0.0),
+                            selectedDate: isoDate,
+                            selectedTime: selectedTime,
+                            location: "Giza, Egypt 24",
+                            pricePerSeat: currentMovie.price ?? 50.0
+                        )
+                    }
+                }
             }
         }
     }
-}
+
 
 struct MoviePosterCard: View {
     let movie: Movie
@@ -319,3 +346,10 @@ struct TimeButton: View {
     }
 }
 
+
+#Preview {
+    let sampleMovies: [Movie] = []
+    return MovieBookingView(movies: sampleMovies)
+        .environmentObject(FavoritesManager.shared)
+        .environmentObject(AuthManager.shared)
+}

@@ -189,4 +189,5 @@ struct ProfileMenuItem: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(AuthManager.shared)
 }

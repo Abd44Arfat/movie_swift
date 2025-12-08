@@ -2,7 +2,11 @@ import Foundation
 
 // MARK: - Movie Model
 // This matches the backend response structure
-struct Movie: Identifiable, Codable {
+struct Movie: Identifiable, Codable, Equatable {
+    // Equatable conformance - compare by id
+    static func == (lhs: Movie, rhs: Movie) -> Bool {
+        lhs.id == rhs.id
+    }
     let id: String          // Backend uses "_id" as String
     let title: String       // Movie title
     private let _posterUrl: String   // Raw URL from backend

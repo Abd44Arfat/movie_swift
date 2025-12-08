@@ -259,4 +259,5 @@ extension View {
 
 #Preview {
     LoginView()
+        .environmentObject(AuthManager.shared)
 }
