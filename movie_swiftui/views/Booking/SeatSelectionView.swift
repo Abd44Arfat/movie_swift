@@ -20,6 +20,7 @@ struct SeatSelectionView: View {
     let selectedDate: String
     let selectedTime: String
     let location: String
+    let pricePerSeat: Double
     
     @StateObject private var viewModel = BookingViewModel()
     @State private var seats: [[Seat]] = []
@@ -28,7 +29,7 @@ struct SeatSelectionView: View {
     @Environment(\.dismiss) var dismiss
     
     var totalPrice: Double {
-        Double(selectedSeats.count) * 11.50
+        Double(selectedSeats.count) * pricePerSeat
     }
     
     var body: some View {
@@ -157,7 +158,7 @@ struct SeatSelectionView: View {
                             // Continue Button
                             HStack(spacing: 16) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("$\(String(format: "%.2f", totalPrice))")
+                                    Text("\(String(format: "%.2f", totalPrice)) EGP")
                                         .font(.system(size: 28, weight: .bold))
                                         .foregroundColor(.white)
                                     Text("\(selectedSeats.count) Seats")
@@ -373,6 +374,6 @@ struct SummaryRow: View {
         rating: "PG",
         selectedDate: "Friday, 23th June 2024",
         selectedTime: "8:30 PM",
-        location: "Miami, Aventura 24"
+        location: "Miami, Aventura 24", pricePerSeat: 100
     )
 }

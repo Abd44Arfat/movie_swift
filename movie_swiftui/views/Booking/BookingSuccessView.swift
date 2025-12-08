@@ -172,9 +172,9 @@ struct BookingSuccessView: View {
                                     .padding(.horizontal, 20)
                                 
                                 BookingDetailRow(
-                                    icon: "dollarsign.circle.fill",
+                                    icon: "banknote.fill",
                                     label: "Total Amount",
-                                    value: "$\(String(format: "%.2f", totalPrice))",
+                                    value: "\(String(format: "%.2f", totalPrice)) EGP",
                                     isHighlighted: true
                                 )
                             }

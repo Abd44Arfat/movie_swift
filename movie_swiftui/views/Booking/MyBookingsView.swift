@@ -90,35 +90,130 @@ struct BookingCard: View {
     var movie: Movie? {
         // First check if we have the full movie details from the booking
         if let movieDetails = booking.movieDetails {
+            print("📽️ Using movie details from booking: \(movieDetails.title)")
             return movieDetails
         }
         // Otherwise try to find it in homeViewModel by ID
-        return homeViewModel.movies.first { $0.id == booking.movieId }
+        let foundMovie = homeViewModel.movies.first { $0.id == booking.movieId }
+        if let foundMovie = foundMovie {
+            print("📽️ Found movie in homeViewModel: \(foundMovie.title)")
+        } else {
+            print("⚠️ Movie not found. Booking movieId: \(booking.movieId), Available movies: \(homeViewModel.movies.map { $0.id })")
+        }
+        return foundMovie
+    }
+    
+    // Format date to readable format
+    var formattedDate: String {
+        // Try ISO8601 format first
+        let isoFormatter = ISO8601DateFormatter()
+        if let date = isoFormatter.date(from: booking.date) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM dd, yyyy"
+            return formatter.string(from: date)
+        }
+        
+        // Try other common formats
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        if let date = dateFormatter.date(from: booking.date) {
+            dateFormatter.dateFormat = "MMM dd, yyyy"
+            return dateFormatter.string(from: date)
+        }
+        
+        // If all else fails, try to extract just the date part
+        if booking.date.contains("T") {
+            let components = booking.date.split(separator: "T")
+            if let dateString = components.first {
+                let parts = dateString.split(separator: "-")
+                if parts.count == 3 {
+                    return "\(parts[2]) \(parts[1]) \(parts[0])"
+                }
+            }
+        }
+        
+        return booking.date
+    }
+    
+    // Format time to readable format
+    var formattedTime: String {
+        // If time is already in readable format, return it
+        if booking.time.contains("PM") || booking.time.contains("AM") {
+            return booking.time
+        }
+        
+        // Try to parse 24-hour format
+        let components = booking.time.split(separator: ":")
+        if components.count >= 2, let hour = Int(components[0]), let minute = Int(components[1]) {
+            let period = hour >= 12 ? "PM" : "AM"
+            let displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour)
+            return String(format: "%d:%02d %@", displayHour, minute, period)
+        }
+        
+        return booking.time
     }
     
     var body: some View {
         HStack(spacing: 16) {
             // Movie Poster
-            if let movie = movie {
-                AsyncImage(url: URL(string: movie.posterUrl)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle().fill(Color.gray.opacity(0.3))
+            ZStack {
+                if let movie = movie {
+                    let _ = print("🖼️ Loading image from: \(movie.posterUrl)")
+                    AsyncImage(url: URL(string: movie.posterUrl)) { phase in
+                        switch phase {
+                        case .empty:
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .overlay(
+                                    VStack {
+                                        ProgressView()
+                                            .tint(.white)
+                                        Text("Loading...")
+                                            .font(.caption2)
+                                            .foregroundColor(.white)
+                                    }
+                                )
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 90, height: 130)
+                                .clipped()
+                        case .failure(let error):
+                            let _ = print("❌ Image load failed: \(error)")
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .overlay(
+                                    VStack(spacing: 4) {
+                                        Image(systemName: "photo")
+                                            .foregroundColor(.white.opacity(0.5))
+                                        Text("Failed")
+                                            .font(.caption2)
+                                            .foregroundColor(.white.opacity(0.5))
+                                    }
+                                )
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
+                } else {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .overlay(
+                            VStack(spacing: 4) {
+                                Image(systemName: "film")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white.opacity(0.5))
+                                Text("No Movie")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
+                        )
                 }
-                .frame(width: 80, height: 120)
-                .cornerRadius(12)
-            } else {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 80, height: 120)
-                    .cornerRadius(12)
-                    .overlay(Image(systemName: "film").foregroundColor(.white))
             }
+            .frame(width: 90, height: 130)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(movie?.title ?? "Unknown Movie")
@@ -126,36 +221,44 @@ struct BookingCard: View {
                     .foregroundColor(.white)
                     .lineLimit(2)
                 
-                HStack {
+                HStack(spacing: 4) {
                     Image(systemName: "calendar")
                         .foregroundColor(.green)
-                        .font(.system(size: 14))
-                    Text(booking.date)
-                        .font(.system(size: 14))
+                        .font(.system(size: 13))
+                    Text(formattedDate)
+                        .font(.system(size: 13))
                         .foregroundColor(.white.opacity(0.8))
                 }
                 
-                HStack {
+                HStack(spacing: 4) {
                     Image(systemName: "clock")
                         .foregroundColor(.green)
-                        .font(.system(size: 14))
-                    Text(booking.time)
-                        .font(.system(size: 14))
+                        .font(.system(size: 13))
+                    Text(formattedTime)
+                        .font(.system(size: 13))
                         .foregroundColor(.white.opacity(0.8))
                 }
                 
-                HStack {
-                    Image(systemName: "mappin.and.ellipse")
+    
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "ticket.fill")
                         .foregroundColor(.green)
-                        .font(.system(size: 14))
-                    Text(booking.location)
-                        .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.8))
+                        .font(.system(size: 13))
+                    Text("\(booking.seats.count) Seats: \(booking.seats.joined(separator: ", "))")
+                        .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.6))
+                        .lineLimit(1)
                 }
                 
-                Text("\(booking.seats.count) Seats: \(booking.seats.joined(separator: ", "))")
-                    .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.6))
+                HStack(spacing: 4) {
+                    Image(systemName: "banknote.fill")
+                        .foregroundColor(.green)
+                        .font(.system(size: 13))
+                    Text("\(String(format: "%.2f", booking.totalPrice)) EGP")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.green)
+                }
             }
             
             Spacer()

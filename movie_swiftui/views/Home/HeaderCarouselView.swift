@@ -64,21 +64,15 @@ struct HorizontalCarouselView: View {
                                     Color.gray.opacity(0.3)
                                         .overlay(ProgressView().tint(.white))
                                 case .success(let image):
-                                    // Successfully loaded image with blurred background fill
+      
                                     ZStack {
                                         // Blurred background layer - fills entire width
                                         image
                                             .resizable()
                                             .aspectRatio(contentMode: .fill)
-                                            .frame(width: geo.size.width, height: 450)
-                                            .blur(radius: 100)
-                                            .opacity(1)
-                                            
-                                        
-                                        // Dark overlay to blend better
-                                        Color.black.opacity(0.3)
-                                        
-                                        // Main sharp image centered
+                                            .frame(width: 1000, height: 450)
+                                            .blur(radius: 50)
+                
                                         image
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
@@ -105,7 +99,7 @@ struct HorizontalCarouselView: View {
                             LinearGradient(
                                 gradient: Gradient(colors: [
                                     .clear,
-                                    .black.opacity(0.3),
+                                    .black.opacity(0.2),
                                     .black.opacity(0.4),
                                     .black.opacity(0.95)
                                 ]),

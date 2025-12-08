@@ -82,7 +82,7 @@ struct HomeView: View {
                             
                             // Categories
                             CategoryFilterView()
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, 10)
                                 .padding(.top, 8)
                             
                             // Popular Movies - pass movies from ViewModel
@@ -118,4 +118,8 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environmentObject(HomeViewModel())
+        .environmentObject(FavoritesManager.shared)
+        .environmentObject(BookingManager.shared)
+        .environmentObject(AuthManager.shared)
 }

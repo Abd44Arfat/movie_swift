@@ -5,7 +5,7 @@ import Foundation
 struct Movie: Identifiable, Codable {
     let id: String          // Backend uses "_id" as String
     let title: String       // Movie title
-    let posterUrl: String   // Full URL to poster image
+    private let _posterUrl: String   // Raw URL from backend
     let genre: [String]     // Array of genres
     let description: String? // Movie description
     let duration: String?    // Duration (e.g., "2h 30m")
@@ -14,11 +14,16 @@ struct Movie: Identifiable, Codable {
     let price: Double?       // Ticket price
     let showtimes: [String]? // Available showtimes (e.g., ["10:00", "14:00"])
     
+    // Computed property that fixes localhost URLs
+    var posterUrl: String {
+        Constants.API.fixImageURL(_posterUrl)
+    }
+    
     // CodingKeys maps the backend JSON keys to our Swift property names
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case title
-        case posterUrl
+        case _posterUrl = "posterUrl"
         case genre
         case description
         case duration

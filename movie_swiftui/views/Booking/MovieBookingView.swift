@@ -215,7 +215,8 @@ struct MovieBookingView: View {
                     rating: String(format: "%.1f", currentMovie.rating ?? 0.0),
                     selectedDate: isoDate,
                     selectedTime: selectedTime,
-                    location: "Miami, Aventura 24"
+                    location: "Miami, Aventura 24",
+                    pricePerSeat: currentMovie.price ?? 50.0
                 )
             }
         }
@@ -318,12 +319,3 @@ struct TimeButton: View {
     }
 }
 
-#Preview {
-    MovieBookingView(
-        movies: [
-            Movie(id: "1", title: "Inside Out 2", posterUrl: "home_image_trailer", genre: ["Animation"], description: "Desc", duration: "1h 36m", rating: 8.5, releaseDate: "2024-06-14",price: 100
-                 ,showtimes: ["15:00"]
-                 )
-        ]
-    )
-}
