@@ -4,6 +4,7 @@ struct PopularMoviesSection: View {
     let movies: [Movie]  // Accept movies from parent
     
     @State private var seeAllPressed = false
+    @State private var showSearch = false
     var onMovieTap: ((Int) -> Void)? = nil
     
     var body: some View {
@@ -25,6 +26,7 @@ struct PopularMoviesSection: View {
                             seeAllPressed = false
                         }
                     }
+                    showSearch = true
                 } label: {
                     HStack(spacing: 4) {
                         Text("See All")
@@ -53,6 +55,9 @@ struct PopularMoviesSection: View {
                 .padding(.horizontal)
                 .padding(.bottom, 20)
             }
+        }
+        .fullScreenCover(isPresented: $showSearch) {
+            MovieSearchView(movies: movies)
         }
     }
 }

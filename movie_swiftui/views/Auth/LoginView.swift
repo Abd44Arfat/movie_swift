@@ -12,36 +12,34 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            // Creative Background
             Color.black.ignoresSafeArea()
             
-            // Background Gradient
-            LinearGradient(
-                colors: [Color.black, Color.black.opacity(0.8), Color(red: 0.1, green: 0.1, blue: 0.1)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            // Subtle glow effect at top
+            VStack {
+                RadialGradient(
+                    colors: [
+                        Color.green.opacity(0.3),
+                        Color.blue.opacity(0.2),
+                        Color.clear
+                    ],
+                    center: .top,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .frame(height: 300)
+                .ignoresSafeArea()
+                
+                Spacer()
+            }
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 32) {
                     // Logo/Title Section
                     VStack(spacing: 16) {
-                        Image(systemName: "film.fill")
-                            .font(.system(size: 80))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [.green, .teal],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .shadow(color: .green.opacity(0.5), radius: 20, x: 0, y: 10)
-                            .padding(.top, 20)
-                        
                         Text("Welcome Back")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
+                            .padding(.top, 60)
                         
                         Text("Sign in to continue your movie journey")
                             .font(.system(size: 16))
@@ -158,13 +156,7 @@ struct LoginView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(
-                                LinearGradient(
-                                    colors: [.green, .teal],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .background(Color.green)
                             .cornerRadius(28)
                             .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
                         }

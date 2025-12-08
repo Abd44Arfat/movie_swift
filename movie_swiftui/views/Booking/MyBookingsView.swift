@@ -86,10 +86,14 @@ struct BookingCard: View {
     let booking: Booking
     @EnvironmentObject var homeViewModel: HomeViewModel
     
-    // Helper to find movie details (since booking might only have ID or partial data)
-    // Assuming booking.movie is the ID or title, but let's try to find it in homeViewModel
+    // Helper to find movie details
     var movie: Movie? {
-        homeViewModel.movies.first { $0.id == booking.movie || $0.title == booking.movie }
+        // First check if we have the full movie details from the booking
+        if let movieDetails = booking.movieDetails {
+            return movieDetails
+        }
+        // Otherwise try to find it in homeViewModel by ID
+        return homeViewModel.movies.first { $0.id == booking.movieId }
     }
     
     var body: some View {

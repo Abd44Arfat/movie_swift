@@ -64,14 +64,29 @@ struct HorizontalCarouselView: View {
                                     Color.gray.opacity(0.3)
                                         .overlay(ProgressView().tint(.white))
                                 case .success(let image):
-                                    // Successfully loaded image - zoomed in to fill more space
-                                    image
-                                        .resizable()
-                                       
-                                        .frame(width: 500, height: 500)
-                                        .clipped()
-                                        .scaleEffect(vm.currentIndex == index ? 1 : 0.4)
-                                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: vm.currentIndex)
+                                    // Successfully loaded image with blurred background fill
+                                    ZStack {
+                                        // Blurred background layer - fills entire width
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: geo.size.width, height: 450)
+                                            .blur(radius: 100)
+                                            .opacity(1)
+                                            
+                                        
+                                        // Dark overlay to blend better
+                                        Color.black.opacity(0.3)
+                                        
+                                        // Main sharp image centered
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(maxWidth: geo.size.width * 0.95, maxHeight: 450)
+                                            .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
+                                    }
+                                    .scaleEffect(vm.currentIndex == index ? 1.0 : 0.95)
+                                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: vm.currentIndex)
                                 case .failure:
                                     // Failed to load - show placeholder
                                     Color.gray.opacity(0.1)

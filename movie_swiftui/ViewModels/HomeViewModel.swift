@@ -36,18 +36,24 @@ class HomeViewModel: ObservableObject {
         // The backend returns an array directly, not wrapped in a "results" object
         networkService.fetch(url: url)
             .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                }
                 switch completion {
                 case .finished:
-                    break
+                    print("✅ Movies fetch completed successfully")
                 case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
+                    DispatchQueue.main.async {
+                        self?.errorMessage = error.localizedDescription
+                    }
                     print("❌ Error fetching movies: \(error)")
                 }
             }, receiveValue: { [weak self] (movies: [Movie]) in
                 // Backend returns array directly, not wrapped
-                self?.movies = movies
-                print("✅ Successfully fetched \(movies.count) movies")
+                DispatchQueue.main.async {
+                    self?.movies = movies
+                    print("✅ Successfully fetched \(movies.count) movies")
+                }
             })
             .store(in: &cancellables)
     }

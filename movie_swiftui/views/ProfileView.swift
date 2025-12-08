@@ -3,7 +3,10 @@ import SwiftUI
 struct ProfileView: View {
     @State private var showWishlist = false
     @State private var showBookings = false
-    @State private var showSettings = false // Placeholder for settings
+    @State private var showSettings = false
+    @State private var showImagePicker = false
+    @State private var selectedImage: UIImage?
+    @State private var profileImage: Image?
     
     @EnvironmentObject var authManager: AuthManager
     
@@ -13,15 +16,40 @@ struct ProfileView: View {
             
             VStack(spacing: 24) {
                 // Profile Image
-                Circle()
-                    .fill(Color.white.opacity(0.1))
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white.opacity(0.5))
-                    )
-                    .padding(.top, 80)
+                Button {
+                    showImagePicker = true
+                } label: {
+                    ZStack(alignment: .bottomTrailing) {
+                        if let profileImage = profileImage {
+                            profileImage
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                        } else {
+                            Circle()
+                                .fill(Color.white.opacity(0.1))
+                                .frame(width: 100, height: 100)
+                                .overlay(
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.white.opacity(0.5))
+                                )
+                        }
+                        
+                        // Edit button
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 32, height: 32)
+                            .overlay(
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                            )
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
+                    }
+                }
+                .padding(.top, 80)
                 
                 Text(authManager.currentUser?.name ?? "User Profile")
                     .font(.system(size: 28, weight: .bold))
@@ -57,6 +85,56 @@ struct ProfileView: View {
         }
         .fullScreenCover(isPresented: $showBookings) {
             MyBookingsView()
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(selectedImage: $selectedImage)
+        }
+        .onChange(of: selectedImage) { oldValue, newValue in
+            if let newValue = newValue {
+                profileImage = Image(uiImage: newValue)
+            }
+        }
+    }
+}
+
+// Image Picker
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var selectedImage: UIImage?
+    @Environment(\.dismiss) var dismiss
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.editedImage] as? UIImage {
+                parent.selectedImage = image
+            } else if let image = info[.originalImage] as? UIImage {
+                parent.selectedImage = image
+            }
+            
+            parent.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
         }
     }
 }

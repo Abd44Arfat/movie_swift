@@ -15,19 +15,25 @@ struct SignUpView: View {
     
     var body: some View {
         ZStack {
-            // Creative Background
-            Image("home_image_trailer")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .ignoresSafeArea()
-                .overlay(
-                    LinearGradient(
-                        colors: [Color.black.opacity(0.3), Color.black.opacity(0.8)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+            Color.black.ignoresSafeArea()
+            
+            // Subtle glow effect at top
+            VStack {
+                RadialGradient(
+                    colors: [
+                        Color.green.opacity(0.3),
+                        Color.blue.opacity(0.2),
+                        Color.clear
+                    ],
+                    center: .top,
+                    startRadius: 0,
+                    endRadius: 400
                 )
-                .blur(radius: 5)
+                .frame(height: 300)
+                .ignoresSafeArea()
+                
+                Spacer()
+            }
             
             VStack(spacing: 0) {
                 // Header
@@ -58,21 +64,10 @@ struct SignUpView: View {
                     VStack(spacing: 32) {
                         // Logo/Title Section
                         VStack(spacing: 16) {
-                            Image(systemName: "film.fill")
-                                .font(.system(size: 70))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.green, .teal],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .shadow(color: .green.opacity(0.5), radius: 20, x: 0, y: 10)
-                                .padding(.top, 20)
-                            
                             Text("Create Account")
                                 .font(.system(size: 32, weight: .bold))
                                 .foregroundColor(.white)
+                                .padding(.top, 40)
                             
                             Text("Sign up to get started")
                                 .font(.system(size: 16))
@@ -281,13 +276,7 @@ struct SignUpView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(
-                                LinearGradient(
-                                    colors: [.green, .teal],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .background(Color.green)
                             .cornerRadius(28)
                             .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
                         }

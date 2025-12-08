@@ -37,7 +37,11 @@ struct MovieSearchView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.white.opacity(0.5))
                         
-                        TextField("Search movies...", text: $searchText)
+                        TextField("", text: $searchText)
+                            .placeholder(when: searchText.isEmpty) {
+                                Text("Search movies...")
+                                    .foregroundColor(.white.opacity(0.3))
+                            }
                             .foregroundColor(.white)
                             .accentColor(.white)
                         

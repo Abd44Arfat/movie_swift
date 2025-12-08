@@ -33,6 +33,10 @@ struct SearchView: View {
                         TextField("Search movies...", text: $searchText)
                             .foregroundColor(.white)
                             .accentColor(.white)
+                            .placeholder(when: searchText.isEmpty) {
+                                Text("Search movies...")
+                                    .foregroundColor(.white.opacity(0.3))
+                            }
                         
                         if !searchText.isEmpty {
                             Button {
