@@ -3,7 +3,7 @@ import Combine
 
 protocol NetworkServiceProtocol {
     func fetch<T: Decodable>(url: URL) -> AnyPublisher<T, APIError>
-    func sendRequest<T: Decodable, U: Encodable>(url: URL, method: String, body: U?) -> AnyPublisher<T, APIError>
+    func sendRequest<T: Decodable, U: Encodable>(url: URL, method: String, body: U?, headers: [String: String]) -> AnyPublisher<T, APIError>
 }
 
 class NetworkService: NetworkServiceProtocol {
@@ -42,10 +42,20 @@ class NetworkService: NetworkServiceProtocol {
             .eraseToAnyPublisher()
     }
     
-    func sendRequest<T: Decodable, U: Encodable>(url: URL, method: String, body: U?) -> AnyPublisher<T, APIError> {
+    func sendRequest<T: Decodable, U: Encodable>(url: URL, method: String, body: U?, headers: [String: String] = [:]) -> AnyPublisher<T, APIError> {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Add custom headers
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        
+        // Auto-inject token if available
+        if let token = UserDefaults.standard.string(forKey: "auth_token") {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         
         if let body = body {
             do {

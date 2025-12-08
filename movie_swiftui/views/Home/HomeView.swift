@@ -5,8 +5,8 @@ import Foundation
 import SwiftUI
 
 struct HomeView: View {
-    // MVVM: Use ViewModel instead of @State for data
-    @StateObject private var viewModel = HomeViewModel()
+    // MVVM: Use ViewModel from Environment
+    @EnvironmentObject var viewModel: HomeViewModel
     
     @State private var scrollOffset: CGFloat = 0
     @State private var showSearch = false

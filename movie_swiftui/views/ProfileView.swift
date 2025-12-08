@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @State private var showWishlist = false
+    @State private var showBookings = false
+    @State private var showSettings = false // Placeholder for settings
+    
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -17,15 +23,28 @@ struct ProfileView: View {
                     )
                     .padding(.top, 80)
                 
-                Text("User Profile")
+                Text(authManager.currentUser?.name ?? "User Profile")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.white)
                 
                 VStack(spacing: 16) {
-                    ProfileMenuItem(icon: "ticket.fill", title: "My Bookings")
-                    ProfileMenuItem(icon: "heart.fill", title: "Favorites")
-                    ProfileMenuItem(icon: "gearshape.fill", title: "Settings")
+                    ProfileMenuItem(icon: "ticket.fill", title: "My Bookings") {
+                        showBookings = true
+                    }
+                    
+                    ProfileMenuItem(icon: "heart.fill", title: "Favorites") {
+                        showWishlist = true
+                    }
+                    
+                    ProfileMenuItem(icon: "gearshape.fill", title: "Settings") {
+                        showSettings = true
+                    }
+                    
                     ProfileMenuItem(icon: "info.circle.fill", title: "About")
+                    
+                    ProfileMenuItem(icon: "rectangle.portrait.and.arrow.right", title: "Logout") {
+                        AuthManager.shared.logout()
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
@@ -33,12 +52,19 @@ struct ProfileView: View {
                 Spacer()
             }
         }
+        .fullScreenCover(isPresented: $showWishlist) {
+            WishlistView()
+        }
+        .fullScreenCover(isPresented: $showBookings) {
+            MyBookingsView()
+        }
     }
 }
 
 struct ProfileMenuItem: View {
     let icon: String
     let title: String
+    var action: (() -> Void)? = nil
     @State private var isPressed = false
     
     var body: some View {
@@ -50,6 +76,7 @@ struct ProfileMenuItem: View {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     isPressed = false
                 }
+                action?()
             }
         } label: {
             HStack(spacing: 16) {

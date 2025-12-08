@@ -8,10 +8,20 @@ struct LoginView: View {
     @State private var showSignUp = false
     @Environment(\.dismiss) var dismiss
     
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         ZStack {
-            // Background
+            // Creative Background
             Color.black.ignoresSafeArea()
+            
+            // Background Gradient
+            LinearGradient(
+                colors: [Color.black, Color.black.opacity(0.8), Color(red: 0.1, green: 0.1, blue: 0.1)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 32) {
@@ -21,40 +31,40 @@ struct LoginView: View {
                             .font(.system(size: 80))
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [.green, .green.opacity(0.7)],
+                                    colors: [.green, .teal],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
-                            .padding(.top, 60)
+                            .shadow(color: .green.opacity(0.5), radius: 20, x: 0, y: 10)
+                            .padding(.top, 20)
                         
                         Text("Welcome Back")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
                         
-                        Text("Sign in to continue")
+                        Text("Sign in to continue your movie journey")
                             .font(.system(size: 16))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.white.opacity(0.8))
                     }
                     .padding(.bottom, 20)
                     
-                    // Input Fields
-                    VStack(spacing: 20) {
+                    // Glassmorphism Container
+                    VStack(spacing: 24) {
                         // Email Field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Email")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
+                                .foregroundColor(.white.opacity(0.8))
                             
                             HStack(spacing: 12) {
                                 Image(systemName: "envelope.fill")
-                                    .foregroundColor(.white.opacity(0.5))
-                                    .frame(width: 20)
+                                    .foregroundColor(.white.opacity(0.6))
                                 
                                 TextField("", text: $email)
                                     .placeholder(when: email.isEmpty) {
                                         Text("Enter your email")
-                                            .foregroundColor(.white.opacity(0.3))
+                                            .foregroundColor(.white.opacity(0.4))
                                     }
                                     .foregroundColor(.white)
                                     .textInputAutocapitalization(.never)
@@ -64,10 +74,10 @@ struct LoginView: View {
                             .padding(16)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.white.opacity(0.05))
+                                    .fill(.ultraThinMaterial)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                     )
                             )
                         }
@@ -76,25 +86,24 @@ struct LoginView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Password")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
+                                .foregroundColor(.white.opacity(0.8))
                             
                             HStack(spacing: 12) {
                                 Image(systemName: "lock.fill")
-                                    .foregroundColor(.white.opacity(0.5))
-                                    .frame(width: 20)
+                                    .foregroundColor(.white.opacity(0.6))
                                 
                                 if showPassword {
                                     TextField("", text: $password)
                                         .placeholder(when: password.isEmpty) {
                                             Text("Enter your password")
-                                                .foregroundColor(.white.opacity(0.3))
+                                                .foregroundColor(.white.opacity(0.4))
                                         }
                                         .foregroundColor(.white)
                                 } else {
                                     SecureField("", text: $password)
                                         .placeholder(when: password.isEmpty) {
                                             Text("Enter your password")
-                                                .foregroundColor(.white.opacity(0.3))
+                                                .foregroundColor(.white.opacity(0.4))
                                         }
                                         .foregroundColor(.white)
                                 }
@@ -103,16 +112,16 @@ struct LoginView: View {
                                     showPassword.toggle()
                                 } label: {
                                     Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.white.opacity(0.6))
                                 }
                             }
                             .padding(16)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.white.opacity(0.05))
+                                    .fill(.ultraThinMaterial)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                     )
                             )
                         }
@@ -128,74 +137,59 @@ struct LoginView: View {
                                     .foregroundColor(.green)
                             }
                         }
-                    }
-                    .padding(.horizontal, 24)
-                    
-                    // Login Button
-                    Button {
-                        isLoading = true
-                        // Simulate login
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            isLoading = false
-                            dismiss()
-                        }
-                    } label: {
-                        ZStack {
-                            if isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            } else {
-                                Text("Sign In")
-                                    .font(.system(size: 18, weight: .semibold))
-                                    .foregroundColor(.white)
+                        
+                        // Login Button
+                        Button {
+                            authManager.login(email: email, password: password) { success in
+                                if success {
+                                    dismiss()
+                                }
                             }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            RoundedRectangle(cornerRadius: 28)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.green, .green.opacity(0.8)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
+                        } label: {
+                            ZStack {
+                                if authManager.isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                } else {
+                                    Text("Sign In")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(
+                                LinearGradient(
+                                    colors: [.green, .teal],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
                                 )
-                                .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
-                        )
+                            )
+                            .cornerRadius(28)
+                            .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
+                        }
+                        .disabled(email.isEmpty || password.isEmpty || authManager.isLoading)
+                        .opacity((email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
                     }
-                    .disabled(email.isEmpty || password.isEmpty || isLoading)
-                    .opacity((email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 10)
-                    
-                    // OR Divider
-                    HStack(spacing: 16) {
-                        Rectangle()
-                            .fill(Color.white.opacity(0.2))
-                            .frame(height: 1)
-                        
-                        Text("OR")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white.opacity(0.5))
-                        
-                        Rectangle()
-                            .fill(Color.white.opacity(0.2))
-                            .frame(height: 1)
-                    }
-                    .padding(.horizontal, 24)
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 30)
+                            .fill(.ultraThinMaterial)
+                            .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10)
+                    )
+                    .padding(.horizontal, 20)
                     
                     // Social Login Buttons
-                    VStack(spacing: 12) {
-                        SocialLoginButton(
-                            icon: "apple.logo",
-                            title: "Continue with Apple"
-                        )
+                    VStack(spacing: 16) {
+                        Text("Or continue with")
+                            .font(.system(size: 14))
+                            .foregroundColor(.white.opacity(0.6))
                         
-                        SocialLoginButton(
-                            icon: "g.circle.fill",
-                            title: "Continue with Google"
-                        )
+                        HStack(spacing: 20) {
+                            SocialLoginButton(icon: "apple.logo")
+                            SocialLoginButton(icon: "g.circle.fill")
+                            SocialLoginButton(icon: "f.circle.fill") // Added Facebook for balance
+                        }
                     }
                     .padding(.horizontal, 24)
                     
@@ -227,7 +221,6 @@ struct LoginView: View {
 
 struct SocialLoginButton: View {
     let icon: String
-    let title: String
     @State private var isPressed = false
     
     var body: some View {
@@ -241,26 +234,20 @@ struct SocialLoginButton: View {
                 }
             }
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                
-                Text(title)
-                    .font(.system(size: 16, weight: .medium))
-            }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(Color.white.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 28)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
-            )
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .foregroundColor(.white)
+                .frame(width: 60, height: 60)
+                .background(
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                )
         }
-        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .scaleEffect(isPressed ? 0.9 : 1.0)
     }
 }
 

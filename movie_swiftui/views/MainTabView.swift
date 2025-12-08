@@ -3,28 +3,34 @@ import SwiftUI
 struct MainTabView: View {
     @State private var selectedTab = 0
     
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Content based on selected tab
-                Group {
-                    switch selectedTab {
-                    case 0:
-                        HomeView()
-                    case 1:
-                        SearchView()
-                  
-                    case 2:
-                        ProfileView()
-                    default:
-                        HomeView()
-                    }
-                }
+            if authManager.isAuthenticated {
+                Color.black.ignoresSafeArea()
                 
-                // Custom Tab Bar
-                EnhancedTabBar(selectedTab: $selectedTab)
+                VStack(spacing: 0) {
+                    // Content based on selected tab
+                    Group {
+                        switch selectedTab {
+                        case 0:
+                            HomeView()
+                        case 1:
+                            SearchView()
+                      
+                        case 2:
+                            ProfileView()
+                        default:
+                            HomeView()
+                        }
+                    }
+                    
+                    // Custom Tab Bar
+                    EnhancedTabBar(selectedTab: $selectedTab)
+                }
+            } else {
+                LoginView()
             }
         }
     }

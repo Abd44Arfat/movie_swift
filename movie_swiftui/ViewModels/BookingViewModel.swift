@@ -67,7 +67,7 @@ class BookingViewModel: ObservableObject {
             return
         }
         
-        networkService.sendRequest(url: url, method: "POST", body: request)
+        networkService.sendRequest(url: url, method: "POST", body: request, headers: [:])
             .sink { [weak self] completion in
                 self?.isLoading = false
                 switch completion {
@@ -77,6 +77,7 @@ class BookingViewModel: ObservableObject {
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] (booking: Booking) in
+                BookingManager.shared.addBooking(booking)
                 self?.bookingSuccess = true
             }
             .store(in: &cancellables)

@@ -4,6 +4,8 @@ struct CategoryFilterView: View {
     let categories = ["All", "Action", "Adventure", "Horror"]
     @State private var selected = "All"
     
+    @EnvironmentObject var viewModel: HomeViewModel
+    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
@@ -29,6 +31,7 @@ struct CategoryFilterView: View {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 selected = cat
                             }
+                            viewModel.fetchMovies(genre: cat)
                         }
                 }
             }

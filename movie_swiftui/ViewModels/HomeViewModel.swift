@@ -17,11 +17,15 @@ class HomeViewModel: ObservableObject {
     }
     
     // MARK: - Fetch Movies from Backend
-    func fetchMovies() {
+    func fetchMovies(genre: String? = nil) {
         // Using Constants for base URL
-        // For iOS Simulator: "http://localhost:3000" works
-        // For Real Device: Update Constants.API.baseURL to your computer's IP
-        guard let url = URL(string: Constants.API.baseURL + "/movies") else {
+        var components = URLComponents(string: Constants.API.baseURL + "/movies")
+        
+        if let genre = genre, genre != "All" {
+            components?.queryItems = [URLQueryItem(name: "genre", value: genre)]
+        }
+        
+        guard let url = components?.url else {
             self.errorMessage = "Invalid URL"
             return
         }

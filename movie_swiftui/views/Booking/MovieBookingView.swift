@@ -8,6 +8,7 @@ struct MovieBookingView: View {
     @State private var selectedDate: Int = 0
     @State private var selectedTime: String = "8:30 PM"
     @State private var showSeatSelection = false
+    @EnvironmentObject var favoritesManager: FavoritesManager
     @Environment(\.dismiss) var dismiss
     
     // Generate dates dynamically starting from today
@@ -59,7 +60,18 @@ struct MovieBookingView: View {
                     
                     Spacer()
                    
-                 
+                    Button {
+                        favoritesManager.toggleFavorite(movieId: currentMovie.id)
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Image(systemName: favoritesManager.isFavorite(movieId: currentMovie.id) ? "heart.fill" : "heart")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(favoritesManager.isFavorite(movieId: currentMovie.id) ? .red : .white)
+                            )
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)

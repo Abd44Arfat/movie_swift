@@ -8,8 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
-        MainTabView()
+        ZStack {
+            MainTabView()
+            
+            SnackbarView(
+                isShowing: $authManager.showSnackbar,
+                message: authManager.snackbarMessage,
+                type: authManager.snackbarType
+            )
+        }
     }
 }
 

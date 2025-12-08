@@ -11,10 +11,23 @@ struct SignUpView: View {
     @State private var agreedToTerms = false
     @Environment(\.dismiss) var dismiss
     
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
         ZStack {
-            // Background
-            Color.black.ignoresSafeArea()
+            // Creative Background
+            Image("home_image_trailer")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .ignoresSafeArea()
+                .overlay(
+                    LinearGradient(
+                        colors: [Color.black.opacity(0.3), Color.black.opacity(0.8)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .blur(radius: 5)
             
             VStack(spacing: 0) {
                 // Header
@@ -28,7 +41,11 @@ struct SignUpView: View {
                             .frame(width: 44, height: 44)
                             .background(
                                 Circle()
-                                    .fill(Color.white.opacity(0.1))
+                                    .fill(.ultraThinMaterial)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                    )
                             )
                     }
                     
@@ -45,11 +62,12 @@ struct SignUpView: View {
                                 .font(.system(size: 70))
                                 .foregroundStyle(
                                     LinearGradient(
-                                        colors: [.green, .green.opacity(0.7)],
+                                        colors: [.green, .teal],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
+                                .shadow(color: .green.opacity(0.5), radius: 20, x: 0, y: 10)
                                 .padding(.top, 20)
                             
                             Text("Create Account")
@@ -58,37 +76,37 @@ struct SignUpView: View {
                             
                             Text("Sign up to get started")
                                 .font(.system(size: 16))
-                                .foregroundColor(.white.opacity(0.7))
+                                .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.bottom, 10)
                         
-                        // Input Fields
+                        // Glassmorphism Container
                         VStack(spacing: 20) {
                             // Full Name Field
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Full Name")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.8))
                                 
                                 HStack(spacing: 12) {
                                     Image(systemName: "person.fill")
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.white.opacity(0.6))
                                         .frame(width: 20)
                                     
                                     TextField("", text: $fullName)
                                         .placeholder(when: fullName.isEmpty) {
                                             Text("Enter your full name")
-                                                .foregroundColor(.white.opacity(0.3))
+                                                .foregroundColor(.white.opacity(0.4))
                                         }
                                         .foregroundColor(.white)
                                 }
                                 .padding(16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white.opacity(0.05))
+                                        .fill(.ultraThinMaterial)
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                         )
                                 )
                             }
@@ -97,17 +115,17 @@ struct SignUpView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Email")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.8))
                                 
                                 HStack(spacing: 12) {
                                     Image(systemName: "envelope.fill")
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.white.opacity(0.6))
                                         .frame(width: 20)
                                     
                                     TextField("", text: $email)
                                         .placeholder(when: email.isEmpty) {
                                             Text("Enter your email")
-                                                .foregroundColor(.white.opacity(0.3))
+                                                .foregroundColor(.white.opacity(0.4))
                                         }
                                         .foregroundColor(.white)
                                         .textInputAutocapitalization(.never)
@@ -117,10 +135,10 @@ struct SignUpView: View {
                                 .padding(16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white.opacity(0.05))
+                                        .fill(.ultraThinMaterial)
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                         )
                                 )
                             }
@@ -129,25 +147,25 @@ struct SignUpView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Password")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.8))
                                 
                                 HStack(spacing: 12) {
                                     Image(systemName: "lock.fill")
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.white.opacity(0.6))
                                         .frame(width: 20)
                                     
                                     if showPassword {
                                         TextField("", text: $password)
                                             .placeholder(when: password.isEmpty) {
                                                 Text("Create a password")
-                                                    .foregroundColor(.white.opacity(0.3))
+                                                    .foregroundColor(.white.opacity(0.4))
                                             }
                                             .foregroundColor(.white)
                                     } else {
                                         SecureField("", text: $password)
                                             .placeholder(when: password.isEmpty) {
                                                 Text("Create a password")
-                                                    .foregroundColor(.white.opacity(0.3))
+                                                    .foregroundColor(.white.opacity(0.4))
                                             }
                                             .foregroundColor(.white)
                                     }
@@ -156,16 +174,16 @@ struct SignUpView: View {
                                         showPassword.toggle()
                                     } label: {
                                         Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
-                                            .foregroundColor(.white.opacity(0.5))
+                                            .foregroundColor(.white.opacity(0.6))
                                     }
                                 }
                                 .padding(16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white.opacity(0.05))
+                                        .fill(.ultraThinMaterial)
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                         )
                                 )
                             }
@@ -174,25 +192,25 @@ struct SignUpView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Confirm Password")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.8))
                                 
                                 HStack(spacing: 12) {
                                     Image(systemName: "lock.fill")
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.white.opacity(0.6))
                                         .frame(width: 20)
                                     
                                     if showConfirmPassword {
                                         TextField("", text: $confirmPassword)
                                             .placeholder(when: confirmPassword.isEmpty) {
                                                 Text("Confirm your password")
-                                                    .foregroundColor(.white.opacity(0.3))
+                                                    .foregroundColor(.white.opacity(0.4))
                                             }
                                             .foregroundColor(.white)
                                     } else {
                                         SecureField("", text: $confirmPassword)
                                             .placeholder(when: confirmPassword.isEmpty) {
                                                 Text("Confirm your password")
-                                                    .foregroundColor(.white.opacity(0.3))
+                                                    .foregroundColor(.white.opacity(0.4))
                                             }
                                             .foregroundColor(.white)
                                     }
@@ -201,25 +219,33 @@ struct SignUpView: View {
                                         showConfirmPassword.toggle()
                                     } label: {
                                         Image(systemName: showConfirmPassword ? "eye.slash.fill" : "eye.fill")
-                                            .foregroundColor(.white.opacity(0.5))
+                                            .foregroundColor(.white.opacity(0.6))
                                     }
                                 }
                                 .padding(16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white.opacity(0.05))
+                                        .fill(.ultraThinMaterial)
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                         )
                                 )
                             }
                         }
-                        .padding(.horizontal, 24)
+                        .padding(24)
+                        .background(
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(.ultraThinMaterial)
+                                .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10)
+                        )
+                        .padding(.horizontal, 20)
                         
                         // Terms and Conditions
                         Button {
-                            agreedToTerms.toggle()
+                            withAnimation {
+                                agreedToTerms.toggle()
+                            }
                         } label: {
                             HStack(spacing: 12) {
                                 Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
@@ -228,7 +254,7 @@ struct SignUpView: View {
                                 
                                 Text("I agree to the Terms & Conditions")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.8))
                                 
                                 Spacer()
                             }
@@ -237,15 +263,14 @@ struct SignUpView: View {
                         
                         // Sign Up Button
                         Button {
-                            isLoading = true
-                            // Simulate sign up
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                isLoading = false
-                                dismiss()
+                            authManager.register(name: fullName, email: email, password: password) { success in
+                                if success {
+                                    dismiss()
+                                }
                             }
                         } label: {
                             ZStack {
-                                if isLoading {
+                                if authManager.isLoading {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 } else {
@@ -257,18 +282,16 @@ struct SignUpView: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
                             .background(
-                                RoundedRectangle(cornerRadius: 28)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [.green, .green.opacity(0.8)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
+                                LinearGradient(
+                                    colors: [.green, .teal],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                             )
+                            .cornerRadius(28)
+                            .shadow(color: .green.opacity(0.4), radius: 20, x: 0, y: 10)
                         }
-                        .disabled(!isFormValid || isLoading)
+                        .disabled(!isFormValid || authManager.isLoading)
                         .opacity(isFormValid ? 1.0 : 0.6)
                         .padding(.horizontal, 24)
                         .padding(.top, 10)
