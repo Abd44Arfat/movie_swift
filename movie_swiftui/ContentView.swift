@@ -26,4 +26,7 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(AuthManager.shared)
+        .environmentObject(HomeViewModel())
+        .environmentObject(FavoritesManager.shared)
+        .environmentObject(BookingManager.shared)
 }

@@ -118,8 +118,12 @@ struct TabBarButton: View {
 }
 
 #Preview {
-    MainTabView()
-        .environmentObject(AuthManager.shared)
+    let authManager = AuthManager.shared
+    // Set authenticated for preview
+    authManager.isAuthenticated = true
+    
+    return MainTabView()
+        .environmentObject(authManager)
         .environmentObject(HomeViewModel())
         .environmentObject(FavoritesManager.shared)
         .environmentObject(BookingManager.shared)
