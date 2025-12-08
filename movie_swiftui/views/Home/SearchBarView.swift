@@ -12,7 +12,11 @@ struct SearchBarView: View {
                 .scaleEffect(isFocused ? 1.1 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused)
             
-            TextField("Search...", text: $text)
+            TextField("", text: $text)
+                .placeholder(when: text.isEmpty) {
+                    Text("Search...")
+                        .foregroundColor(.white.opacity(0.3))
+                }
                 .foregroundColor(.white)
                 .focused($isFocused)
                 .font(.system(size: 16))

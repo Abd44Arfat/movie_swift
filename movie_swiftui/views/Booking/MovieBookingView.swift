@@ -215,7 +215,7 @@ struct MovieBookingView: View {
                     rating: String(format: "%.1f", currentMovie.rating ?? 0.0),
                     selectedDate: isoDate,
                     selectedTime: selectedTime,
-                    location: "Miami, Aventura 24",
+                    location: "Giza, Egypt 24",
                     pricePerSeat: currentMovie.price ?? 50.0
                 )
             }

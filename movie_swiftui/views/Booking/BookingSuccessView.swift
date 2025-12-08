@@ -302,14 +302,4 @@ struct BookingDetailRow: View {
     }
 }
 
-#Preview {
-    BookingSuccessView(
-        movieTitle: "Inside Out 2",
-        movieImage: "home_image_trailer",
-        selectedDate: "Friday, 23th June 2024",
-        selectedTime: "8:30 PM",
-        selectedSeats: "G9, G10",
-        location: "Miami, Aventura 24",
-        totalPrice: 23.00
-    )
-}
+
