@@ -17,7 +17,6 @@ struct SignUpView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            // Subtle glow effect at top
             VStack {
                 RadialGradient(
                     colors: [
@@ -36,7 +35,6 @@ struct SignUpView: View {
             }
             
             VStack(spacing: 0) {
-                // Header
                 HStack {
                     Button {
                         dismiss()
@@ -62,7 +60,6 @@ struct SignUpView: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 32) {
-                        // Logo/Title Section
                         VStack(spacing: 16) {
                             Text("Create Account")
                                 .font(.system(size: 32, weight: .bold))
@@ -75,9 +72,7 @@ struct SignUpView: View {
                         }
                         .padding(.bottom, 10)
                         
-                        // Glassmorphism Container
                         VStack(spacing: 20) {
-                            // Full Name Field
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Full Name")
                                     .font(.system(size: 14, weight: .medium))
@@ -106,7 +101,6 @@ struct SignUpView: View {
                                 )
                             }
                             
-                            // Email Field
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Email")
                                     .font(.system(size: 14, weight: .medium))
@@ -138,7 +132,6 @@ struct SignUpView: View {
                                 )
                             }
                             
-                            // Password Field
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Password")
                                     .font(.system(size: 14, weight: .medium))
@@ -183,7 +176,6 @@ struct SignUpView: View {
                                 )
                             }
                             
-                            // Confirm Password Field
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Confirm Password")
                                     .font(.system(size: 14, weight: .medium))
@@ -236,7 +228,6 @@ struct SignUpView: View {
                         )
                         .padding(.horizontal, 20)
                         
-                        // Terms and Conditions
                         Button {
                             withAnimation {
                                 agreedToTerms.toggle()
@@ -256,7 +247,6 @@ struct SignUpView: View {
                         }
                         .padding(.horizontal, 24)
                         
-                        // Sign Up Button
                         Button {
                             authManager.register(name: fullName, email: email, password: password) { success in
                                 if success {
@@ -285,7 +275,6 @@ struct SignUpView: View {
                         .padding(.horizontal, 24)
                         .padding(.top, 10)
                         
-                        // Sign In Link
                         HStack(spacing: 4) {
                             Text("Already have an account?")
                                 .foregroundColor(.white.opacity(0.7))

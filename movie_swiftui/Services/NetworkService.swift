@@ -47,12 +47,10 @@ class NetworkService: NetworkServiceProtocol {
         request.httpMethod = method
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // Add custom headers
         for (key, value) in headers {
             request.addValue(value, forHTTPHeaderField: key)
         }
         
-        // Auto-inject token if available
         if let token = UserDefaults.standard.string(forKey: "auth_token") {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }

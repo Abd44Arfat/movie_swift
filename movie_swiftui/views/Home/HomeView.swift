@@ -1,11 +1,6 @@
-
-import Foundation
-
-
 import SwiftUI
 
 struct HomeView: View {
-    // MVVM: Use ViewModel from Environment
     @EnvironmentObject var viewModel: HomeViewModel
     
     @State private var scrollOffset: CGFloat = 0
@@ -17,9 +12,7 @@ struct HomeView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            // Show different states based on ViewModel
             if viewModel.isLoading {
-                // Loading state
                 VStack(spacing: 16) {
                     ProgressView()
                         .tint(.white)
@@ -29,7 +22,6 @@ struct HomeView: View {
                         .font(.headline)
                 }
             } else if let error = viewModel.errorMessage {
-                // Error state
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 50))
@@ -57,10 +49,8 @@ struct HomeView: View {
                     }
                 }
             } else {
-                // Success state - show movies
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
-                        // Header Slider - pass movies from ViewModel
                         HeaderCarouselView(
                             movies: viewModel.movies,
                             onPlayTrailer: { movieIndex in
@@ -70,22 +60,19 @@ struct HomeView: View {
                         )
                         
                         VStack(spacing: 16) {
-                            // Search Bar
                             Button {
                                 showSearch = true
                             } label: {
                                 SearchBarView()
-                                    .allowsHitTesting(false) // Disable interaction with the inner text field
+                                    .allowsHitTesting(false)
                             }
                             .padding(.horizontal, 20)
                             .padding(.top, 16)
                             
-                            // Categories
                             CategoryFilterView()
                                 .padding(.horizontal, 10)
                                 .padding(.top, 8)
                             
-                            // Popular Movies - pass movies from ViewModel
                             PopularMoviesSection(
                                 movies: viewModel.movies,
                                 onMovieTap: { movieIndex in
@@ -94,7 +81,7 @@ struct HomeView: View {
                                 }
                             )
                                 .padding(.top, 8)
-                                .padding(.bottom, 100) // Space for tab bar
+                                .padding(.bottom, 100)
                         }
                     }
                 }

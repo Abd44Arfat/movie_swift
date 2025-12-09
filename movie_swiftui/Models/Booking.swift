@@ -30,7 +30,6 @@ struct Booking: Codable, Identifiable {
         totalPrice = try container.decode(Double.self, forKey: .totalPrice)
         location = try container.decode(String.self, forKey: .location)
         
-        // Handle movie field - can be either String (ID) or Movie object
         if let movieObject = try? container.decode(Movie.self, forKey: .movie) {
             movieDetails = movieObject
             movieId = movieObject.id

@@ -14,7 +14,6 @@ struct LoginView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            // Subtle glow effect at top
             VStack {
                 RadialGradient(
                     colors: [
@@ -34,7 +33,6 @@ struct LoginView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 32) {
-                    // Logo/Title Section
                     VStack(spacing: 16) {
                         Text("Welcome Back")
                             .font(.system(size: 36, weight: .bold))
@@ -47,9 +45,7 @@ struct LoginView: View {
                     }
                     .padding(.bottom, 20)
                     
-                    // Glassmorphism Container
                     VStack(spacing: 24) {
-                        // Email Field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Email")
                                 .font(.system(size: 14, weight: .medium))
@@ -80,7 +76,6 @@ struct LoginView: View {
                             )
                         }
                         
-                        // Password Field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Password")
                                 .font(.system(size: 14, weight: .medium))
@@ -124,11 +119,9 @@ struct LoginView: View {
                             )
                         }
                         
-                        // Forgot Password
                         HStack {
                             Spacer()
                             Button {
-                                // Forgot password action
                             } label: {
                                 Text("Forgot Password?")
                                     .font(.system(size: 14, weight: .medium))
@@ -136,7 +129,6 @@ struct LoginView: View {
                             }
                         }
                         
-                        // Login Button
                         Button {
                             authManager.login(email: email, password: password) { success in
                                 if success {
@@ -171,7 +163,6 @@ struct LoginView: View {
                     )
                     .padding(.horizontal, 20)
                     
-                    // Social Login Buttons
                     VStack(spacing: 16) {
                         Text("Or continue with")
                             .font(.system(size: 14))
@@ -180,12 +171,11 @@ struct LoginView: View {
                         HStack(spacing: 20) {
                             SocialLoginButton(icon: "apple.logo")
                             SocialLoginButton(icon: "g.circle.fill")
-                            SocialLoginButton(icon: "f.circle.fill") // Added Facebook for balance
+                            SocialLoginButton(icon: "f.circle.fill")
                         }
                     }
                     .padding(.horizontal, 24)
                     
-                    // Sign Up Link
                     HStack(spacing: 4) {
                         Text("Don't have an account?")
                             .foregroundColor(.white.opacity(0.7))
@@ -243,7 +233,6 @@ struct SocialLoginButton: View {
     }
 }
 
-// Helper extension for placeholder
 extension View {
     func placeholder<Content: View>(
         when shouldShow: Bool,

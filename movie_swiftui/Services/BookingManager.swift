@@ -13,7 +13,6 @@ class BookingManager: ObservableObject {
     
     private init(networkService: NetworkServiceProtocol = NetworkService.shared) {
         self.networkService = networkService
-        // Optionally load from local storage first, then sync with API
         fetchBookings()
     }
     
@@ -39,10 +38,6 @@ class BookingManager: ObservableObject {
     }
     
     func addBooking(_ booking: Booking) {
-        // Optimistically add to list, assuming the API call in BookingViewModel succeeded
-        // Or better, just re-fetch
         bookings.append(booking)
-        // In a real app, we might want to re-fetch to ensure consistency
-        // fetchBookings()
     }
 }
