@@ -1,4 +1,7 @@
-<<<<<<< HEAD
+# movie_swift
+![نص فقرتك (2)](https://github.com/user-attachments/assets/b5fb1f91-3035-4135-9f24-52f3c4117d11)
+>>>>>>> e68b635efad7d641bd8dbd1d0ee4ddbe8fd129a9
+
 # 🎬 Movie Booking App - SwiftUI
 
 A modern, feature-rich iOS movie booking application built with SwiftUI and following the MVVM architecture pattern. This app allows users to browse movies, book tickets, select seats, and manage their bookings with a beautiful, glassmorphic UI design.
@@ -287,6 +290,3 @@ For issues, questions, or contributions, please open an issue on GitHub.
 
 **Made with ❤️ using SwiftUI**
 =======
-# movie_swift
-![نص فقرتك (2)](https://github.com/user-attachments/assets/b5fb1f91-3035-4135-9f24-52f3c4117d11)
->>>>>>> e68b635efad7d641bd8dbd1d0ee4ddbe8fd129a9
