@@ -1,6 +1,6 @@
 # movie_swift
 ![نص فقرتك (2)](https://github.com/user-attachments/assets/b5fb1f91-3035-4135-9f24-52f3c4117d11)
->>>>>>> e68b635efad7d641bd8dbd1d0ee4ddbe8fd129a9
+
 
 # 🎬 Movie Booking App - SwiftUI
 
